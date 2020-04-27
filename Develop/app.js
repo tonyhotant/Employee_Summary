@@ -33,70 +33,76 @@ inquirer
       name: "role",
       message: "Which team member do you want to add? ",
       choices: ["Manager", "Engineer", "Intern"],
+      default: () => {
+        return "Employee";
+      },
     },
   ])
   .then((answers) => {
     switch (answers.role) {
-      case "Manager": {
-        inquirer
-          .prompt({
-            type: "input",
-            name: "officeNumber",
-            message: "What's your Manager's Office number? ",
-          })
-          .then((officeNumber) => {
-            return officeNumber;
-          });
-        const newManager = new Manager(
-          answers.name,
-          answers.id,
-          answers.email,
-          answers.role,
-          officeNumber
-        );
-        console.log(newManager);
-        return newManager;
-      }
-      case "Engineer": {
-        inquirer
-          .prompt({
-            type: "input",
-            name: "github",
-            message: "What's your Engineer's GitHub username? ",
-          })
-          .then((github) => {
-            return github;
-          });
-        const newEngineer = new Engineer(
-          answers.name,
-          answers.id,
-          answers.email,
-          answers.role,
-          github
-        );
-        console.log(newEngineer);
-        return newEngineer;
-      }
-      case "Intern": {
-        inquirer
-          .prompt({
-            type: "input",
-            name: "School",
-            message: "What's your Intern's school? ",
-          })
-          .then((school) => {
-            return school;
-          });
-        const newIntern = new Intern(
-          answers.name,
-          answers.id,
-          answers.email,
-          answers.role,
-          school
-        );
-        console.log(newIntern);
-        return newIntern;
-      }
+      case "Manager":
+        {
+          inquirer
+            .prompt({
+              type: "input",
+              name: "officeNumber",
+              message: "What's your Manager's Office number? ",
+            })
+            .then((data) => {
+              const newManager = new Manager(
+                answers.name,
+                answers.id,
+                answers.email,
+                answers.role,
+                data.officeNumber
+              );
+              console.log(newManager);
+              return newManager;
+            });
+        }
+        break;
+      case "Engineer":
+        {
+          inquirer
+            .prompt({
+              type: "input",
+              name: "github",
+              message: "What's your Engineer's GitHub username? ",
+            })
+            .then((data) => {
+              const newEngineer = new Engineer(
+                answers.name,
+                answers.id,
+                answers.email,
+                answers.role,
+                data.github
+              );
+              console.log(newEngineer);
+              return newEngineer;
+            });
+        }
+        break;
+      case "Intern":
+        {
+          inquirer
+            .prompt({
+              type: "input",
+              name: "School",
+              message: "What's your Intern's school? ",
+            })
+            .then((data) => {
+              const newIntern = new Intern(
+                answers.name,
+                answers.id,
+                answers.email,
+                answers.role,
+                data.school
+              );
+              console.log(newIntern);
+              return newIntern;
+            });
+        }
+        break;
       //default switch case?
     }
     const employees = [newManager, newEngineer, newIntern];
