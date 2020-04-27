@@ -15,38 +15,44 @@ inquirer
   .prompt([
     {
       type: "input",
-      name: "ID",
+      name: "name",
+      message: "What's your team member's name? ",
+    },
+    {
+      type: "input",
+      name: "id",
       message: "What's your team member's ID number? ",
     },
     {
       type: "input",
-      name: "Email",
+      name: "email",
       message: "What's your team member's Email? ",
     },
     {
       type: "list",
-      name: "Role",
+      name: "role",
       message: "Which team member do you want to add? ",
       choices: ["Manager", "Engineer", "Intern"],
     },
   ])
   .then((answers) => {
-    switch (answers.Role) {
+    switch (answers.role) {
       case "Manager": {
         inquirer
           .prompt({
             type: "input",
-            name: "Office number",
+            name: "officeNumber",
             message: "What's your Manager's Office number? ",
           })
-          .then((officeNum) => {
-            return officeNum;
+          .then((officeNumber) => {
+            return officeNumber;
           });
         const newManager = new Manager(
-          answers.ID,
-          answers.Email,
-          answers.Role,
-          officeNum
+          answers.name,
+          answers.id,
+          answers.email,
+          answers.role,
+          officeNumber
         );
         console.log(newManager);
         return newManager;
@@ -55,17 +61,18 @@ inquirer
         inquirer
           .prompt({
             type: "input",
-            name: "Github",
+            name: "github",
             message: "What's your Engineer's GitHub username? ",
           })
-          .then((userNam) => {
-            return userNam;
+          .then((github) => {
+            return github;
           });
         const newEngineer = new Engineer(
-          answers.ID,
-          answers.Email,
-          answers.Role,
-          userNam
+          answers.name,
+          answers.id,
+          answers.email,
+          answers.role,
+          github
         );
         console.log(newEngineer);
         return newEngineer;
@@ -81,9 +88,10 @@ inquirer
             return school;
           });
         const newIntern = new Intern(
-          answers.ID,
-          answers.Email,
-          answers.Role,
+          answers.name,
+          answers.id,
+          answers.email,
+          answers.role,
           school
         );
         console.log(newIntern);
