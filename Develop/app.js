@@ -7,115 +7,178 @@ const fs = require("fs");
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./lib/htmlRenderer");
-// Write code to use inquirer to gather information about
-// the development team members
-// and to create objects for each team member
-// using the correct classes as blueprints
-inquirer
-  .prompt([
-    {
-      type: "input",
-      name: "name",
-      message: "What's your team member's name? ",
-    },
-    {
-      type: "input",
-      name: "id",
-      message: "What's your team member's ID number? ",
-    },
-    {
-      type: "input",
-      name: "email",
-      message: "What's your team member's Email? ",
-    },
-    {
-      type: "list",
-      name: "role",
-      message: "Which team member do you want to add? ",
-      choices: ["Manager", "Engineer", "Intern"],
-      default: () => {
-        return "Employee";
-      },
-    },
-  ])
-  .then((answers) => {
-    switch (answers.role) {
-      case "Manager":
-        {
-          inquirer
-            .prompt({
-              type: "input",
-              name: "officeNumber",
-              message: "What's your Manager's Office number? ",
-            })
-            .then((data) => {
-              const newManager = new Manager(
-                answers.name,
-                answers.id,
-                answers.email,
-                answers.role,
-                data.officeNumber
-              );
-              console.log(newManager);
-              return newManager;
-            });
-        }
-        break;
-      case "Engineer":
-        {
-          inquirer
-            .prompt({
-              type: "input",
-              name: "github",
-              message: "What's your Engineer's GitHub username? ",
-            })
-            .then((data) => {
-              const newEngineer = new Engineer(
-                answers.name,
-                answers.id,
-                answers.email,
-                answers.role,
-                data.github
-              );
-              console.log(newEngineer);
-              return newEngineer;
-            });
-        }
-        break;
-      case "Intern":
-        {
-          inquirer
-            .prompt({
-              type: "input",
-              name: "School",
-              message: "What's your Intern's school? ",
-            })
-            .then((data) => {
-              const newIntern = new Intern(
-                answers.name,
-                answers.id,
-                answers.email,
-                answers.role,
-                data.school
-              );
-              console.log(newIntern);
-              return newIntern;
-            });
-        }
-        break;
-      //default switch case?
-    }
-    const employees = [newManager, newEngineer, newIntern];
-    render(employees);
-  })
-  .catch((error) => {
-    if (error.isTtyError) {
-      // Prompt couldn't be rendered in the current environment
-    } else {
-      // Something else when wrong
-    }
-  });
 
+const managerNum = 0;
+const engineerNum = 0;
+const internNum = 0;
+
+let employees = [];
+
+const questions = [
+  {
+    type: "input",
+    name: "name",
+    message: "What's your team member's name? ",
+  },
+  {
+    type: "input",
+    name: "id",
+    message: "What's your team member's ID number? ",
+  },
+  {
+    type: "input",
+    name: "email",
+    message: "What's your team member's Email? ",
+  },
+  {
+    type: "list",
+    name: "role",
+    message: "Which team member do you want to add? ",
+    choices: ["Manager", "Engineer", "Intern"],
+  },
+];
+
+const teamQuestion = {
+  type: "list",
+  name: "role",
+  message: "Which team member do you want to add? ",
+  choices: ["Engineer", "Intern"],
+};
+
+const finalQuestion = {
+  type: "list",
+  name: "role",
+  message: "Which team member do you want to add? ",
+  choices: ["Engineer", "Intern", "Finish"],
+};
+
+function getEmployee(answers) {
+  switch (answers.role) {
+
+    case "Manager":
+      {
+        inquirer
+          .prompt({
+            type: "input",
+            name: "officeNumber",
+            message: "What's your Manager's Office number? ",
+          })
+          .then((data) => {
+            managerNum++;
+            const newManager = new Manager(
+              answers.name,
+              answers.id,
+              answers.email,
+              answers.role,
+              data.officeNumber
+            );
+            return newManager;
+          });
+      }
+      break;
+
+    case "Engineer":
+      {
+        inquirer
+          .prompt({
+            type: "input",
+            name: "github",
+            message: "What's your Engineer's GitHub username? ",
+          })
+          .then((data) => {
+            engineerNum++;
+            const newEngineer = new Engineer(
+              answers.name,
+              answers.id,
+              answers.email,
+              answers.role,
+              data.github
+            );
+            return newEngineer;
+          });
+      }
+      break;
+
+    case "Intern":
+      {
+        inquirer
+          .prompt({
+            type: "input",
+            name: "school",
+            message: "What's your Intern's school? ",
+          })
+          .then((data) => {
+            internNum++;
+            const newIntern = new Intern(
+              answers.name,
+              answers.id,
+              answers.email,
+              answers.role,
+              data.school
+            );
+            return newIntern;
+          });
+      }
+      break;
+
+    case "Finish":
+      {
+        inquirer.prompt({
+          type: "confirm",
+          name: "finish",
+          message: "Do you want to finish now? ",
+        }).then(() => {
+          //call end function
+        })
+      }
+      break;
+
+    default: {
+      console.log("something wrong here...");
+    }
+  }
+}
+
+function promptUser(questions) {
+  return inquirer.prompt(questions);
+}
+
+
+async function init() {
+  console.log("Welcome to Employee Summary Generator! ");
+  try {
+    const answers = await promptUser();
+
+
+    if (managerNum ==1) {
+      questions[3] = teamQuestion;
+    }
+
+    if (managerNum == 1 && engineerNum >= 2 && internNum != 0) {
+      questions[3] = finalQuestion;
+        
+    }
+    else{
+
+    const employee = await getEmployee(answers);
+
+    employees.push(employee);
+    }
+
+
+    const team = render(employees);
+
+
+
+
+    console.log("Successful");
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+
+init();
 // After the user has input all employees desired,
 // call the `render` function (required
 // above) and pass in an array containing
