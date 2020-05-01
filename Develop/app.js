@@ -32,30 +32,31 @@ const questions = [
     type: "list",
     name: "role",
     message: "Which team member do you want to add? ",
-    choices: ["Manager", "Engineer", "Intern"],
+    choices: ["Manager", "Engineer", "Intern", "Complete"],
   },
 ];
 
-async function getEmployee(answers) {
-   switch (answers.role) {
+function getEmployee(answers) {
+  switch (answers.role) {
     case "Manager":
       {
         inquirer
-          .prompt([{
-            type: "input",
-            name: "officeNumber",
-            message: "What's your Manager's Office number? ",
-          }])
+          .prompt([
+            {
+              type: "input",
+              name: "officeNumber",
+              message: "What's your Manager's Office number? ",
+            },
+          ])
           .then((data) => {
-            console.log(data);
             const newManager = new Manager(
               answers.name,
               answers.id,
               answers.email,
               data.officeNumber
             );
-            console.log(newManager);
-            return newManager;
+            employees.push(newManager);
+            promptUser();
           });
       }
       break;
@@ -75,7 +76,8 @@ async function getEmployee(answers) {
               answers.email,
               data.github
             );
-            return newEngineer;
+            employees.push(newEngineer);
+            promptUser();
           });
       }
       break;
@@ -95,41 +97,40 @@ async function getEmployee(answers) {
               answers.email,
               data.school
             );
-            return newIntern;
+            employees.push(newIntern);
+            promptUser();
           });
       }
       break;
 
-    default: {
-      console.log("something wrong here...");
-    }
+    case "Complete":
+      {
+        console.log(employees);
+        renderHtml(employees);
+      }
+      break;
   }
+}
+
+function renderHtml(employees) {
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR);
+  }
+  fs.writeFileSync(outputPath, render(employees), "utf-8");
 }
 
 function promptUser() {
-  return inquirer.prompt(questions);
-}
-
-async function init() {
   console.log("Welcome to Employee Summary Generator! ");
-  try {
-    const answers = await promptUser();
 
-    const employee = getEmployee(answers);
-    console.log(employee);
+  inquirer
+    .prompt(questions)
+    .then((answers) => {
+      getEmployee(answers);
+    })
 
-    employees.push(employee);
-    console.log(employees);
-
-    if (!fs.existsSync(OUTPUT_DIR)) {
-      fs.mkdirSync(OUTPUT_DIR);
-    }
-    fs.writeFileSync(outputPath, render(employees), "utf-8");
-
-    console.log("Successful");
-  } catch (err) {
-    console.log(err);
-  }
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
-init();
+promptUser();
