@@ -113,6 +113,7 @@ function getEmployee(answers) {
 }
 
 function renderHtml(employees) {
+  //complete inquirer and create team.html
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR);
   }
