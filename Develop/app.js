@@ -4,8 +4,10 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
+
 const render = require("./lib/htmlRenderer");
 
 const employees = [];
@@ -34,16 +36,16 @@ const questions = [
   },
 ];
 
-function getEmployee(answers) {
-  switch (answers.role) {
+async function getEmployee(answers) {
+   switch (answers.role) {
     case "Manager":
-      
+      {
         inquirer
-          .prompt({
+          .prompt([{
             type: "input",
             name: "officeNumber",
             message: "What's your Manager's Office number? ",
-          })
+          }])
           .then((data) => {
             console.log(data);
             const newManager = new Manager(
@@ -52,10 +54,10 @@ function getEmployee(answers) {
               answers.email,
               data.officeNumber
             );
-            // console.log(newManager);
-            // return newManager;
+            console.log(newManager);
+            return newManager;
           });
-      
+      }
       break;
 
     case "Engineer":
@@ -117,12 +119,12 @@ async function init() {
     console.log(employee);
 
     employees.push(employee);
-    // console.log(employees);
+    console.log(employees);
 
-    // if (!fs.existsSync(OUTPUT_DIR)) {
-    //   fs.mkdirSync(OUTPUT_DIR);
-    // }
-    // fs.writeFileSync(outputPath, render(employees), "utf-8");
+    if (!fs.existsSync(OUTPUT_DIR)) {
+      fs.mkdirSync(OUTPUT_DIR);
+    }
+    fs.writeFileSync(outputPath, render(employees), "utf-8");
 
     console.log("Successful");
   } catch (err) {
